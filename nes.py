@@ -2,21 +2,25 @@
 """Script that mashes NES boxart together and tweets them"""
 
 import gd
+import keys
 import os
 import random
 import re
 import subprocess
 import sys
+import tweepy
 
 
-PWD       = '/home/amarriner/python/nes/'
+PWD       = '/home/amarriner/python/nes'
 IMAGE_DIR = PWD + '/images/nes/'
-SAVE_DIR  = '/home/amarriner/public_html/'
+SAVE_DIR  = PWD + '/images/'
 
 DIMENSIONS  = (490, 680)
 FRAMES      = 5
 X_OFFSET    = 600
 SQUARE_SIZE = 10
+
+API = None
 
 
 def build_animated_frames(images):
@@ -53,6 +57,18 @@ def build_jumble(images):
    im.writePng(SAVE_DIR + '/jumble.png')
 
 
+def connect_to_twitter():
+   """Connects to twitter"""
+
+   global API
+
+   auth = tweepy.OAuthHandler(keys.consumer_key, keys.consumer_secret)
+   auth.secure = True
+   auth.set_access_token(keys.access_token, keys.access_token_secret)
+
+   API = tweepy.API(auth)
+
+
 def get_images():
    """Finds two random boxarts and returns the resulting array of data"""
 
@@ -82,6 +98,8 @@ def main():
 
    build_animated_frames(images)
 
+   connect_to_twitter()
+   API.update_with_media(SAVE_DIR + 'jumble.png', 'TEST')
    # subprocess.call(PWD + 'make_animated_gif.shl')
 
 
