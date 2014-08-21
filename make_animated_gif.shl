@@ -1,3 +1,3 @@
 #!/bin/sh
 
-convert -delay 50 -loop 0 ~/public_html/anim*png ~/public_html/anim.gif
+convert -delay 50 -loop 0 images/anim*png images/anim.gif

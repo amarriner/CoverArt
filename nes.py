@@ -99,6 +99,8 @@ def main():
 
    build_animated_frames(images)
 
+   subprocess.call('./make_animated_gif.shl')
+
    write_json(images)
 
 
