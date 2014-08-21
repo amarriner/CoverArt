@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 """Script that mashes NES boxart together and tweets them"""
 
+from listener import StdOutListener
+
 import gd
+import json
 import keys
 import os
 import random
 import re
 import subprocess
 import sys
-import tweepy
 
 
 PWD       = '/home/amarriner/python/nes'
@@ -20,8 +22,8 @@ FRAMES      = 5
 X_OFFSET    = 600
 SQUARE_SIZE = 10
 
-API = None
-
+API    = None
+STREAM = None
 
 def build_animated_frames(images):
    """Builds several images that will be compiled into an animated GIF"""
@@ -57,18 +59,6 @@ def build_jumble(images):
    im.writePng(SAVE_DIR + '/jumble.png')
 
 
-def connect_to_twitter():
-   """Connects to twitter"""
-
-   global API
-
-   auth = tweepy.OAuthHandler(keys.consumer_key, keys.consumer_secret)
-   auth.secure = True
-   auth.set_access_token(keys.access_token, keys.access_token_secret)
-
-   API = tweepy.API(auth)
-
-
 def get_images():
    """Finds two random boxarts and returns the resulting array of data"""
 
@@ -89,6 +79,17 @@ def get_images():
    return images
 
 
+def write_json(images):
+   """Store images array as JSON in a file on disk"""
+
+   for i in range(0, len(images)):
+      images[i]['img'] = None
+
+   f = open('data.json', 'w')
+   f.write(json.dumps(images))
+   f.close()
+
+
 def main():
    """Initial entry point"""
 
@@ -98,9 +99,7 @@ def main():
 
    build_animated_frames(images)
 
-   connect_to_twitter()
-   API.update_with_media(SAVE_DIR + 'jumble.png', 'TEST')
-   # subprocess.call(PWD + 'make_animated_gif.shl')
+   write_json(images)
 
 
 if __name__ == '__main__':
